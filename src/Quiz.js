@@ -22,15 +22,17 @@ class Quiz extends Component {
     super();
     this.state = {
       value: 0,
-      questionIndex: 0
+      questionIndex: 0,
+      selectedIndex: 0,
+      numberOfSelectedAns: 0
     };
   }
 
   getRadioOptions() {
-    const choices = this.props.questions[this.state.questionIndex].choices;
+    const choices = this.props.questions[this.state.questionIndex].choices.choice;
     let radio_props = [];
 
-    choices.choice.map(choice => {
+    choices.map(choice => {
       radio_props.push({ label: choice, value: 0 });
     });
     return radio_props;
@@ -38,13 +40,25 @@ class Quiz extends Component {
 
   handleNext = () => {
     if (this.props.questions.length >= this.state.questionIndex + 2) {
-      this.setState({ questionIndex: this.state.questionIndex + 1 });
+      const selectedAnswer = this.props.questions[this.state.questionIndex].choices.answer;
+      if (this.state.selectedIndex == selectedAnswer) {
+        this.setState({ numberOfSelectedAns: this.state.numberOfSelectedAns + 1 });
+      }
+      this.setState({ questionIndex: this.state.questionIndex + 1, selectedIndex: 0 });
     } else {
       const { navigate } = this.props.navigation;
-      navigate("Stats");
+      navigate("Stats", { numberOfSelectedAns: this.state.numberOfSelectedAns });
     }
   };
 
+  handleBack = () => {
+    if (this.state.questionIndex > 0) {
+      this.setState({ questionIndex: this.state.questionIndex - 1, selectedIndex: 0 });
+    } else {
+      const { navigate } = this.props.navigation;
+      navigate("Main");
+    }
+  };
   render() {
     const { goBack } = this.props.navigation;
 
@@ -73,11 +87,11 @@ class Quiz extends Component {
             <Text>{this.props.questions[this.state.questionIndex].text} </Text>
             <RadioForm
               radio_props={this.getRadioOptions()}
-              initial={0}
+              initial={-1}
               style={{ marginTop: 5, alignItems: "flex-start" }}
               labelHorizontal={true}
-              onPress={value => {
-                this.setState({ value: value });
+              onPress={(value, index) => {
+                this.setState({ selectedIndex: index + 1 });
               }}
             />
           </ScrollView>
@@ -86,6 +100,9 @@ class Quiz extends Component {
         <View style={styles.buttonContainer}>
           <TouchableHighlight onPress={() => goBack()}>
             <Text style={styles.buttonText}> Quit </Text>
+          </TouchableHighlight>
+          <TouchableHighlight onPress={this.handleBack}>
+            <Text style={styles.buttonText}> Back </Text>
           </TouchableHighlight>
           <TouchableHighlight onPress={this.handleNext}>
             <Text style={styles.buttonText}> Next </Text>

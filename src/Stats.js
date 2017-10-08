@@ -5,6 +5,9 @@ import { View, Text, StyleSheet } from "react-native";
 // create a component
 class Stats extends Component {
   render() {
+    const { state } = this.props.navigation;
+    console.warn(state.params.numberOfSelectedAns);
+
     return (
       <View style={styles.container}>
         <Text>Stats</Text>

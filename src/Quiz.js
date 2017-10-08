@@ -5,6 +5,8 @@ import * as Progress from "react-native-progress";
 import { connect } from "react-redux";
 import RadioForm from "react-native-simple-radio-button";
 import Counter from "react-native-counter";
+// import Toast from "react-native-root-toast"; wait till this https://github.com/magicismight/react-native-root-siblings/pull/15
+import Toast, { DURATION } from "react-native-easy-toast";
 
 export const mapStateToProps = (state: Object) => {
   return {
@@ -23,10 +25,10 @@ class Quiz extends Component {
   constructor() {
     super();
     this.state = {
-      value: 0,
       questionIndex: 0,
       selectedIndex: 0,
-      numberOfSelectedAns: 0
+      numberOfSelectedAns: 0,
+      toastVisible: false
     };
   }
 
@@ -41,14 +43,17 @@ class Quiz extends Component {
   }
 
   timeUp = () => {
+    this.refs.toast.show("Time's up!", DURATION.LENGTH_LONG);
     const { navigate } = this.props.navigation;
     navigate("Stats", {
       numberOfSelectedAns: this.state.numberOfSelectedAns,
       noOfQuestions: this.props.questions.length
     });
+    // this.setState({ toastVisible: true });
   };
 
   handleNext = () => {
+    this.refs.radioForm.updateIsActiveIndex(-1);
     if (this.props.questions.length >= this.state.questionIndex + 2) {
       const selectedAnswer = this.props.questions[this.state.questionIndex].choices.answer;
       if (this.state.selectedIndex == selectedAnswer) {
@@ -88,7 +93,6 @@ class Quiz extends Component {
             />
           </View>
         </View>
-
         {!this.props.questions && (
           <View style={styles.progressBarContainer}>
             <Progress.Circle size={40} indeterminate={true} />
@@ -101,22 +105,21 @@ class Quiz extends Component {
             resizeMode={"contain"}
           />
         </View>
-
         {this.props.questions && (
           <ScrollView contentContainerStyle={styles.questionContainer}>
             <Text>{this.props.questions[this.state.questionIndex].text} </Text>
             <RadioForm
+              ref="radioForm"
               radio_props={this.getRadioOptions()}
               initial={-1}
               style={{ marginTop: 5, alignItems: "flex-start" }}
               labelHorizontal={true}
-              onPress={(value, index) => {
+              onPress={index => {
                 this.setState({ selectedIndex: index + 1 });
               }}
             />
           </ScrollView>
         )}
-
         <View style={styles.buttonContainer}>
           <TouchableHighlight onPress={() => goBack()}>
             <Text style={styles.buttonText}> Quit </Text>
@@ -128,6 +131,16 @@ class Quiz extends Component {
             <Text style={styles.buttonText}> Next </Text>
           </TouchableHighlight>
         </View>
+        {/* <Toast
+          visible={this.state.toastVisible}
+          position={50}
+          shadow={false}
+          animation={false}
+          hideOnPress={true}
+        >
+          Time's up
+        </Toast> */}
+        <Toast ref="toast" />
       </View>
     );
   }

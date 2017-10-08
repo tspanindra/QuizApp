@@ -4,6 +4,7 @@ import { View, Text, StyleSheet, TouchableHighlight, Image, ScrollView } from "r
 import * as Progress from "react-native-progress";
 import { connect } from "react-redux";
 import RadioForm from "react-native-simple-radio-button";
+import Counter from "react-native-counter";
 
 export const mapStateToProps = (state: Object) => {
   return {
@@ -13,6 +14,7 @@ export const mapStateToProps = (state: Object) => {
 
 // create a component
 class Quiz extends Component {
+  mixins: [TimerMixin];
   static navigationOptions = {
     title: "Quiz",
     headerStyle: { paddingTop: 20 }
@@ -38,6 +40,14 @@ class Quiz extends Component {
     return radio_props;
   }
 
+  timeUp = () => {
+    const { navigate } = this.props.navigation;
+    navigate("Stats", {
+      numberOfSelectedAns: this.state.numberOfSelectedAns,
+      noOfQuestions: this.props.questions.length
+    });
+  };
+
   handleNext = () => {
     if (this.props.questions.length >= this.state.questionIndex + 2) {
       const selectedAnswer = this.props.questions[this.state.questionIndex].choices.answer;
@@ -46,8 +56,7 @@ class Quiz extends Component {
       }
       this.setState({ questionIndex: this.state.questionIndex + 1, selectedIndex: 0 });
     } else {
-      const { navigate } = this.props.navigation;
-      navigate("Stats", { numberOfSelectedAns: this.state.numberOfSelectedAns });
+      this.timeUp();
     }
   };
 
@@ -66,7 +75,18 @@ class Quiz extends Component {
       <View style={styles.container}>
         <View style={styles.borderView}>
           <Text style={styles.textStyle}>Q{this.state.questionIndex + 1}</Text>
-          <Text style={styles.textStyle}>Time remaining: </Text>
+          <View style={styles.timerContainer}>
+            <Text>Time Left: </Text>
+            <Counter
+              end={0} // REQUIRED End of the counter
+              start={60} // Beginning of the counter
+              time={100000} // Duration (in ms) of the counter
+              digits={0} // Number of digits after the comma
+              easing="linear" // Easing function name
+              onComplete={this.timeUp}
+              style={{ color: "red" }}
+            />
+          </View>
         </View>
 
         {!this.props.questions && (
@@ -127,6 +147,12 @@ const styles = StyleSheet.create({
   textStyle: {
     padding: 5,
     backgroundColor: "#add8e6"
+  },
+  timerContainer: {
+    flexDirection: "row",
+    padding: 5,
+    backgroundColor: "#add8e6",
+    alignItems: "center"
   },
   progressBarContainer: {
     marginTop: 10,

@@ -30,8 +30,8 @@ export class Main extends React.Component {
   constructor() {
     super();
     this.state = {
-      showProgressBar: true,
-      appLoaded: false
+      appLoaded: false,
+      loading: true
     };
   }
 
@@ -69,7 +69,7 @@ export class Main extends React.Component {
           <Text style={styles.headerText}>Welcome to</Text>
           <Text style={styles.headerText}>Trivia App</Text>
 
-          {this.state.showProgressBar && (
+          {this.state.loading && (
             <View style={styles.progressBarContainer}>
               <Progress.Circle size={70} indeterminate={true} />
               <Text style={styles.progressTitle}> Loading Trivia </Text>
@@ -80,6 +80,8 @@ export class Main extends React.Component {
               <Image
                 style={{ width: 250, height: 100 }}
                 source={triviaPic}
+                onLoadStart={() => this.setState({ loading: true })}
+                onLoadEnd={() => this.setState({ loading: false })}
                 resizeMode={"contain"}
               />
               <Text> Trivia Ready</Text>

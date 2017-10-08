@@ -36,11 +36,22 @@ class Quiz extends Component {
     return radio_props;
   }
 
+  handleNext = () => {
+    if (this.props.questions.length >= this.state.questionIndex + 2) {
+      this.setState({ questionIndex: this.state.questionIndex + 1 });
+    } else {
+      const { navigate } = this.props.navigation;
+      navigate("Stats");
+    }
+  };
+
   render() {
+    const { goBack } = this.props.navigation;
+
     return (
       <View style={styles.container}>
         <View style={styles.borderView}>
-          <Text style={styles.textStyle}>Q1</Text>
+          <Text style={styles.textStyle}>Q{this.state.questionIndex + 1}</Text>
           <Text style={styles.textStyle}>Time remaining: </Text>
         </View>
 
@@ -63,7 +74,7 @@ class Quiz extends Component {
             <RadioForm
               radio_props={this.getRadioOptions()}
               initial={0}
-              style={{ alignItems: "flex-start" }}
+              style={{ marginTop: 5, alignItems: "flex-start" }}
               labelHorizontal={true}
               onPress={value => {
                 this.setState({ value: value });
@@ -73,12 +84,10 @@ class Quiz extends Component {
         )}
 
         <View style={styles.buttonContainer}>
-          <TouchableHighlight onPress={() => console.warn("clicked")}>
+          <TouchableHighlight onPress={() => goBack()}>
             <Text style={styles.buttonText}> Quit </Text>
           </TouchableHighlight>
-          <TouchableHighlight
-            onPress={() => this.setState({ questionIndex: this.state.questionIndex + 1 })}
-          >
+          <TouchableHighlight onPress={this.handleNext}>
             <Text style={styles.buttonText}> Next </Text>
           </TouchableHighlight>
         </View>

@@ -1,6 +1,7 @@
 import React from "react";
 import Main from "./src/main";
 import Quiz from "./src/Quiz";
+import Stats from "./src/Stats";
 import { StackNavigator } from "react-navigation";
 import { Provider } from "react-redux";
 import { createStore, applyMiddleware } from "redux";
@@ -11,7 +12,8 @@ import Reactotron from "reactotron-react-native";
 
 const BasicApp = StackNavigator({
   Main: { screen: Main },
-  Quiz: { screen: Quiz }
+  Quiz: { screen: Quiz },
+  Stats: { screen: Stats }
 });
 
 let store = Reactotron.createStore(appReducer, applyMiddleware(thunk));

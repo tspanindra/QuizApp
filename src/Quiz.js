@@ -4,7 +4,6 @@ import { View, Text, StyleSheet, TouchableHighlight, Image, ScrollView } from "r
 import * as Progress from "react-native-progress";
 import { connect } from "react-redux";
 import RadioForm from "react-native-simple-radio-button";
-import Counter from "react-native-counter";
 // import Toast from "react-native-root-toast"; wait till this https://github.com/magicismight/react-native-root-siblings/pull/15
 import Toast, { DURATION } from "react-native-easy-toast";
 
@@ -28,8 +27,27 @@ class Quiz extends Component {
       questionIndex: 0,
       selectedIndex: 0,
       numberOfSelectedAns: 0,
-      toastVisible: false
+      toastVisible: false,
+      counterText: 60
     };
+  }
+
+  componentDidMount() {
+    let timesRun = 0;
+    this.timer = setInterval(() => {
+      this.setState({ counterText: this.state.counterText - 1 });
+      timesRun += 1;
+      if (timesRun === 60) {
+        clearInterval(this.timer);
+        if (this.props.questions.length >= this.state.questionIndex + 2) {
+          this.timeUp();
+        }
+      }
+    }, 1000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.timer);
   }
 
   getRadioOptions() {
@@ -49,7 +67,6 @@ class Quiz extends Component {
       numberOfSelectedAns: this.state.numberOfSelectedAns,
       noOfQuestions: this.props.questions.length
     });
-    // this.setState({ toastVisible: true });
   };
 
   handleNext = () => {
@@ -68,36 +85,26 @@ class Quiz extends Component {
   handleBack = () => {
     if (this.state.questionIndex > 0) {
       this.setState({ questionIndex: this.state.questionIndex - 1, selectedIndex: 0 });
-    } else {
-      const { navigate } = this.props.navigation;
-      navigate("Main");
     }
   };
   render() {
     const { goBack } = this.props.navigation;
-
+    const nextText = this.state.questionIndex + 1 < this.props.questions.length ? "Next" : "Finish";
     return (
       <View style={styles.container}>
         <View style={styles.borderView}>
           <Text style={styles.textStyle}>Q{this.state.questionIndex + 1}</Text>
           <View style={styles.timerContainer}>
-            <Text>Time Left: </Text>
-            <Counter
-              end={0} // REQUIRED End of the counter
-              start={60} // Beginning of the counter
-              time={100000} // Duration (in ms) of the counter
-              digits={0} // Number of digits after the comma
-              easing="linear" // Easing function name
-              onComplete={this.timeUp}
-              style={{ color: "red" }}
-            />
+            <Text>Time Left: {this.state.counterText}</Text>
           </View>
         </View>
+
         {!this.props.questions && (
           <View style={styles.progressBarContainer}>
             <Progress.Circle size={40} indeterminate={true} />
           </View>
         )}
+
         <View style={styles.imageContainer}>
           <Image
             style={{ width: 250, height: 150 }}
@@ -105,6 +112,7 @@ class Quiz extends Component {
             resizeMode={"contain"}
           />
         </View>
+
         {this.props.questions && (
           <ScrollView contentContainerStyle={styles.questionContainer}>
             <Text>{this.props.questions[this.state.questionIndex].text} </Text>
@@ -112,7 +120,7 @@ class Quiz extends Component {
               ref="radioForm"
               radio_props={this.getRadioOptions()}
               initial={-1}
-              style={{ marginTop: 5, alignItems: "flex-start" }}
+              style={{ marginTop: 15, marginBottom: 15, alignItems: "flex-start" }}
               labelHorizontal={true}
               onPress={index => {
                 this.setState({ selectedIndex: index + 1 });
@@ -120,26 +128,23 @@ class Quiz extends Component {
             />
           </ScrollView>
         )}
+
         <View style={styles.buttonContainer}>
           <TouchableHighlight onPress={() => goBack()}>
             <Text style={styles.buttonText}> Quit </Text>
           </TouchableHighlight>
-          <TouchableHighlight onPress={this.handleBack}>
-            <Text style={styles.buttonText}> Back </Text>
-          </TouchableHighlight>
+
+          {this.state.questionIndex > 0 && (
+            <TouchableHighlight onPress={this.handleBack}>
+              <Text style={styles.buttonText}> Back </Text>
+            </TouchableHighlight>
+          )}
+
           <TouchableHighlight onPress={this.handleNext}>
-            <Text style={styles.buttonText}> Next </Text>
+            <Text style={styles.buttonText}> {nextText} </Text>
           </TouchableHighlight>
         </View>
-        {/* <Toast
-          visible={this.state.toastVisible}
-          position={50}
-          shadow={false}
-          animation={false}
-          hideOnPress={true}
-        >
-          Time's up
-        </Toast> */}
+
         <Toast ref="toast" />
       </View>
     );
@@ -149,7 +154,7 @@ class Quiz extends Component {
 // define your styles
 const styles = StyleSheet.create({
   container: {
-    margin: 10
+    margin: 1
   },
   borderView: {
     alignItems: "center",
@@ -174,7 +179,8 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    padding: 5
+    padding: 5,
+    marginBottom: 20
   },
   imageContainer: {
     alignItems: "center",

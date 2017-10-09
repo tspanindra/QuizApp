@@ -18,6 +18,11 @@ class Stats extends Component {
             <Text>{Math.round(progress * 100)}% </Text>
             <Progress.Bar progress={progress} width={200} height={20} />
           </View>
+          {progress != 1 && (
+            <Text style={styles.tryAgainInfo}>
+              Try again and see if you can get all the Answers!{" "}
+            </Text>
+          )}
         </View>
 
         <View style={styles.buttonContainer}>
@@ -57,6 +62,9 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginTop: 40,
     padding: 5
+  },
+  tryAgainInfo: {
+    marginTop: 15
   },
   buttonText: {
     padding: 5,

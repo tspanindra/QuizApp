@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, Text, View, TouchableHighlight, Image } from "react-native";
+import { StyleSheet, Text, View, TouchableHighlight, Image, NetInfo } from "react-native";
 import * as Progress from "react-native-progress";
 import { connect } from "react-redux";
 import * as appActions from "../state/actions";
@@ -33,6 +33,12 @@ export class Main extends React.Component {
       appLoaded: false,
       loading: true
     };
+  }
+
+  componentDidMount() {
+    NetInfo.isConnected.fetch().then(isConnected => {
+      // console.warn("First, is " + (isConnected ? "online" : "offline"));
+    });
   }
 
   startTrivia = () => {

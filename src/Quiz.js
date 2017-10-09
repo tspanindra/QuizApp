@@ -95,7 +95,7 @@ class Quiz extends Component {
         <View style={styles.borderView}>
           <Text style={styles.textStyle}>Q{this.state.questionIndex + 1}</Text>
           <View style={styles.timerContainer}>
-            <Text>Time Left: {this.state.counterText}</Text>
+            <Text>Time Left: {this.state.counterText} s</Text>
           </View>
         </View>
 

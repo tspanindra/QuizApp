@@ -1,11 +1,10 @@
 import { LOAD_APP } from "./actions";
-import { combineReducers } from "redux";
 
 const intialState = {
   questions: []
 };
 
-const QuizApp = (state = intialState, action) => {
+const Questions = (state = intialState, action) => {
   switch (action.type) {
     case LOAD_APP: {
       return { ...state, questions: action.questions };
@@ -16,8 +15,4 @@ const QuizApp = (state = intialState, action) => {
   }
 };
 
-const appReducer = combineReducers({
-  QuizApp
-});
-
-export default appReducer;
+export default Questions;

@@ -17,7 +17,7 @@ const mapDispatchToProps = (dispatch: Dispatch) =>
 
 export const mapStateToProps = (state: Object) => {
   return {
-    questions: state.QuizApp
+    questions: state.Questions
   };
 };
 
@@ -69,6 +69,7 @@ export class Main extends React.Component {
   }
 
   render() {
+    this.props.saveScore(30);
     return (
       <View style={styles.container}>
         <View style={styles.headerContainer}>

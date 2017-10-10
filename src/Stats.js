@@ -2,12 +2,25 @@
 import React, { Component } from "react";
 import { View, Text, StyleSheet, TouchableHighlight } from "react-native";
 import * as Progress from "react-native-progress";
+import { connect } from "react-redux";
+import * as appActions from "../state/actions";
+import { bindActionCreators } from "redux";
+
+const mapDispatchToProps = (dispatch: Dispatch) =>
+  bindActionCreators(
+    {
+      ...appActions
+    },
+    dispatch
+  );
 
 // create a component
 class Stats extends Component {
   render() {
     const { goBack, state, navigate } = this.props.navigation;
     const progress = state.params.numberOfSelectedAns / state.params.noOfQuestions;
+    this.props.saveScore(state.params.numberOfSelectedAns);
+
     return (
       <View style={styles.container}>
         <Text style={styles.header}>Trivia Stats</Text>
@@ -73,4 +86,4 @@ const styles = StyleSheet.create({
 });
 
 //make this component available to the app
-export default Stats;
+export default connect(null, mapDispatchToProps)(Stats);

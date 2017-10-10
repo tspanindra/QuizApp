@@ -9,7 +9,7 @@ import Toast, { DURATION } from "react-native-easy-toast";
 
 export const mapStateToProps = (state: Object) => {
   return {
-    questions: state.QuizApp.questions
+    questions: state.Questions.questions
   };
 };
 
@@ -40,6 +40,8 @@ class Quiz extends Component {
       if (timesRun === 60) {
         clearInterval(this.timer);
         if (this.props.questions.length >= this.state.questionIndex + 2) {
+          this.refs.toast.show("Time's up!", DURATION.LENGTH_LONG);
+          setTimeout(() => {}, 2000);
           this.timeUp();
         }
       }
@@ -61,7 +63,6 @@ class Quiz extends Component {
   }
 
   timeUp = () => {
-    this.refs.toast.show("Time's up!", DURATION.LENGTH_LONG);
     const { navigate } = this.props.navigation;
     navigate("Stats", {
       numberOfSelectedAns: this.state.numberOfSelectedAns,

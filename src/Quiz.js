@@ -71,8 +71,8 @@ class Quiz extends Component {
   };
 
   handleNext = () => {
-    this.refs.radioForm.updateIsActiveIndex(-1);
     if (this.props.questions.length >= this.state.questionIndex + 2) {
+      this.refs.radioForm.updateIsActiveIndex(-1);
       const selectedAnswer = this.props.questions[this.state.questionIndex].choices.answer;
       if (this.state.selectedIndex == selectedAnswer) {
         this.setState({ numberOfSelectedAns: this.state.numberOfSelectedAns + 1 });
@@ -88,8 +88,13 @@ class Quiz extends Component {
       this.setState({ questionIndex: this.state.questionIndex - 1, selectedIndex: 0 });
     }
   };
-  render() {
+
+  handleQuit = () => {
     const { goBack } = this.props.navigation;
+    goBack();
+  };
+
+  render() {
     const nextText = this.state.questionIndex + 1 < this.props.questions.length ? "Next" : "Finish";
     return (
       <View style={styles.container}>
@@ -131,7 +136,7 @@ class Quiz extends Component {
         )}
 
         <View style={styles.buttonContainer}>
-          <TouchableHighlight onPress={() => goBack()}>
+          <TouchableHighlight onPress={this.handleQuit}>
             <Text style={styles.buttonText}> Quit </Text>
           </TouchableHighlight>
 

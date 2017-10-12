@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, Text, View, TouchableHighlight, Image, NetInfo } from "react-native";
+import { StyleSheet, Text, View, TouchableHighlight, Image, NetInfo, FlatList } from "react-native";
 import * as Progress from "react-native-progress";
 import { connect } from "react-redux";
 import * as appActions from "../state/actions";
@@ -17,11 +17,14 @@ const mapDispatchToProps = (dispatch: Dispatch) =>
 
 export const mapStateToProps = (state: Object) => {
   return {
-    questions: state.Questions
+    questions: state.Questions,
+    scores: state.Scores
   };
 };
 
 export class Main extends React.Component {
+  keyExtractor = (item, index) => index;
+
   static navigationOptions = {
     title: "Trivia",
     headerStyle: { paddingTop: 20 }
@@ -68,7 +71,21 @@ export class Main extends React.Component {
     this.loadData();
   }
 
+  renderHeader = () => {
+    return <Text style={styles.header}> Your Top 5 scores! </Text>;
+  };
+
+  renderItem = ({ item, index }) => {
+    return (
+      <Text style={styles.resultText}>
+        {index + 1}) {item}
+      </Text>
+    );
+  };
+
   render() {
+    const scores = this.props.scores;
+
     return (
       <View style={styles.container}>
         <View style={styles.headerContainer}>
@@ -91,6 +108,15 @@ export class Main extends React.Component {
                 resizeMode={"contain"}
               />
               <Text> Trivia Ready</Text>
+
+              {scores && (
+                <FlatList
+                  data={this.props.scores}
+                  keyExtractor={this.keyExtractor}
+                  ListHeaderComponent={this.renderHeader}
+                  renderItem={this.renderItem}
+                />
+              )}
             </View>
           )}
         </View>
@@ -111,6 +137,12 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     alignItems: "center",
     backgroundColor: "#fff"
+  },
+  header: {
+    alignSelf: "center",
+    fontSize: 15,
+    paddingTop: 10,
+    fontWeight: "bold"
   },
   headerContainer: {
     flex: 3,
